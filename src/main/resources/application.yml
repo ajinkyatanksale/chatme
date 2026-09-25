@@ -1,0 +1,122 @@
+spring:
+  application:
+    name: chat-app
+  # Active profile - override with -Dspring.profiles.active=prod
+  profiles:
+    active: local
+  logging:
+    level:
+      org.springframework.web.socket: DEBUG
+      org.springframework.messaging: DEBUG
+      org.springframework.security: DEBUG
+      org.springframework.web: DEBUG
+  # JPA / Hibernate
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  flyway:
+    enabled: false
+
+# App-level JWT config (used by JwtService later)
+app:
+  jwt:
+    expiration-ms: 86400000
+    secret: ${JWT_SECRET}
+  cors:
+    allowed-origins: http://localhost:3000
+
+server:
+  port: 8081
+---
+# LOCAL PROFILE
+spring:
+  config:
+    activate:
+      on-profile: local
+
+  datasource:
+    url: jdbc:postgresql://localhost:5433/chatme
+    username: chatme
+    password: chatme
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+  cache:
+    timeout: 30
+
+  docker:
+    compose:
+      lifecycle-management: start-and-stop
+
+  jpa:
+    show-sql: false              # useful during dev
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+  info:
+    title: ChatMe API
+    version: 1.0.0
+    description: Real-time chat application API
+
+---
+# PROD PROFILE
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  datasource:
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USER}
+    password: ${DATABASE_PASSWORD}
+    hikari:
+      maximum-pool-size: 20
+
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      password: ${REDIS_PASSWORD}
+
+  cache:
+    timeout: ${CACHE_TIMEOUT}
+
+  app:
+    cors:
+      allowed-origins: ${FRONTEND_URL}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+
+
+  # Flyway - runs migrations from src/main/resources/db/migration/
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    default-schema: public
+    baseline-on-migrate: false
+    schemas:
+      - public
+      - auth
+      - room
+      - message
+    create-schemas: true
