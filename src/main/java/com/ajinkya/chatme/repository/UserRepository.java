@@ -25,7 +25,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     @Transactional
     @Modifying
-    @Query(value = "update auth.user u set u.status = :user_status where user_id =: user_id", nativeQuery = true)
+    @Query(value = "update auth.user set status = :user_status where user_id = :user_id", nativeQuery = true)
     int updateStatusByUserId(@Param("user_status") String userStatus, @Param("user_id") UUID userId);
 
     @Query(value = "select * from auth.user u, room.room r where r.user_id=u.user_id and r.room_id=:room_id and u.status=:status", nativeQuery = true)

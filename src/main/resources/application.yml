@@ -31,8 +31,6 @@ app:
   cors:
     allowed-origins: http://localhost:3000
 
-server:
-  port: 8081
 ---
 # LOCAL PROFILE
 spring:

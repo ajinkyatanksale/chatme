@@ -72,18 +72,13 @@ public class MessageService {
 
             Page<com.ajinkya.chatme.entity.Message> messages = messageRepository.findByRoomOrderByCreatedAtDesc(room, pageable);
 
-            com.ajinkya.chatme.dto.userInfo.User userDto = com.ajinkya.chatme.dto.userInfo.User.builder().email(user.getEmail())
-                    .username(user.getUsername())
-                    .status(user.getStatus().name())
-                    .avatarUrl(user.getAvatarUrl())
-                    .lastSeen(user.getLastSeen()).build();
             messages.stream().forEach(message -> {
                 Message message1 = Message.builder().content(message.getContent())
                         .messageStatus(message.getMessageStatus().name())
                         .contentType(message.getContentType().name())
                         .editedAt(message.getEditedAt())
                         .createdAt(message.getCreatedAt())
-                        .sender(userDto)
+                        .sender(tranformUser(message.getUser()))
                         .roomId(message.getRoom().getId())
                         .build();
                 messageList.add(message1);
@@ -94,8 +89,16 @@ public class MessageService {
         return messageList;
     }
 
+    private com.ajinkya.chatme.dto.userInfo.User tranformUser(User user) {
+        return com.ajinkya.chatme.dto.userInfo.User.builder().email(user.getEmail())
+                .username(user.getUsername())
+                .status(user.getStatus().name())
+                .avatarUrl(user.getAvatarUrl())
+                .lastSeen(user.getLastSeen()).build();
+    }
+
     private boolean validateRoomMembership(UUID roomId, User user) {
-        List<Room> rooms = roomRepository.findByCreatedBy(user);
-        return rooms.stream().anyMatch(room -> room.getId().equals(roomId));
+        List<RoomWithLastRead> rooms = roomRepository.findRoomsForUser(user.getId());
+        return rooms.stream().anyMatch(room -> room.room().getId().equals(roomId));
     }
 }
