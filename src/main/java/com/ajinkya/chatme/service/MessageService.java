@@ -9,11 +9,11 @@ import com.ajinkya.chatme.entity.RoomWithLastRead;
 import com.ajinkya.chatme.entity.User;
 import com.ajinkya.chatme.exception.ResourceNotFoundException;
 import com.ajinkya.chatme.repository.MessageRepository;
+import com.ajinkya.chatme.repository.RoomMemberRepository;
 import com.ajinkya.chatme.repository.RoomRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -35,6 +34,12 @@ public class MessageService {
 
     @Autowired
     RoomRepository roomRepository;
+
+    @Autowired
+    RoomMemberRepository roomMemberRepository;
+
+    @Autowired
+    TaskExecutor taskExecutor;
 
     @Async("taskExecutor")
     public CompletableFuture<com.ajinkya.chatme.entity.Message> saveMessageAsync(MessageRequest messageRequest, User user, UUID roomId) {
@@ -67,6 +72,10 @@ public class MessageService {
         boolean isMember = validateRoomMembership(roomId, user);
         List<Message> messageList = new ArrayList<>();
         if (isMember) {
+            CompletableFuture.runAsync(() -> {
+                roomMemberRepository.markAsRead(roomId, user.getId());
+            }, taskExecutor);
+
             Pageable pageable = PageRequest.of(pageNumber, pageSize);
             Room room = roomRepository.findById(roomId).orElseThrow(() -> new ResourceNotFoundException("Room not found:"));
 
@@ -83,9 +92,7 @@ public class MessageService {
                         .build();
                 messageList.add(message1);
             });
-
         }
-
         return messageList;
     }
 

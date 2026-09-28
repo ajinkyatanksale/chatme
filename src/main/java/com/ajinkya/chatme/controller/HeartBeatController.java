@@ -15,7 +15,7 @@ public class HeartBeatController {
     PresenceService presenceService;
 
     @MessageMapping("/heartbeat")
-    public void heartBeat(@RequestBody @Valid Authentication authentication) {
+    public void heartBeat(Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
             return;
         }

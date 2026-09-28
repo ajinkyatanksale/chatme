@@ -24,9 +24,9 @@ public interface RoomMemberRepository extends JpaRepository<RoomMember, UUID> {
     @Query(value = "select * from room.room_member rm where rm.room_id=:room_id and rm.user_id <> :sender_id", nativeQuery = true)
     List<RoomMember> findRecipientIdsByRoomId(@Param("room_id") UUID roomId, @Param("sender_id") UUID senderId);
 
-    @Transactional
     @Modifying
-    @Query(value = "update room.room_member rm set rm.last_read_at = NOW() where rm.room_id=:room_id and rm.user_id=:user_id", nativeQuery = true)
-    int markAsRead(@Param("room_id") UUID roomId, @Param("user_id") UUID userId);
+    @Transactional
+    @Query(value = "update room.room_member set last_read_at = NOW() where room_id=:room_id and user_id=:user_id", nativeQuery = true)
+    void markAsRead(@Param("room_id") UUID roomId, @Param("user_id") UUID userId);
 }
 

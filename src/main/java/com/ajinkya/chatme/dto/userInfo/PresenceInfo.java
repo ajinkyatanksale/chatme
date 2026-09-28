@@ -11,6 +11,6 @@ import java.util.UUID;
 @Setter
 @ToString
 public class PresenceInfo {
-    private UUID userId;
+    private String username;
     private String status;
 }

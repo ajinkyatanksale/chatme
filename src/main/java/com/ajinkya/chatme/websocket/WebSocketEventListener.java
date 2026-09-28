@@ -37,7 +37,7 @@ public class WebSocketEventListener {
             User user1 = (User) user.getPrincipal();
             if (user1 != null) {
                 presenceService.setOnline(user1);
-                PresenceInfo presenceInfo = PresenceInfo.builder().userId(user1.getId())
+                PresenceInfo presenceInfo = PresenceInfo.builder().username(user1.getUsername())
                         .status(UserStatus.ONLINE.name()).build();
                 List<RoomWithLastRead> rooms = roomRepository.findRoomsForUser(user1.getId());
                 rooms.forEach(room -> simpMessagingTemplate.convertAndSend("/topic/room/status/" + room.room().getId(), presenceInfo));
@@ -52,7 +52,7 @@ public class WebSocketEventListener {
             User user1 = (User) user.getPrincipal();
             if (user1 != null) {
                 presenceService.setOffline(user1);
-                PresenceInfo presenceInfo = PresenceInfo.builder().userId(user1.getId())
+                PresenceInfo presenceInfo = PresenceInfo.builder().username(user1.getUsername())
                         .status(UserStatus.OFFLINE.name()).build();
                 List<RoomWithLastRead> rooms = roomRepository.findRoomsForUser(user1.getId());
 
