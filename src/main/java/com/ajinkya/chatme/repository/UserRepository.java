@@ -28,6 +28,11 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     @Query(value = "update auth.user set status = :user_status where user_id = :user_id", nativeQuery = true)
     int updateStatusByUserId(@Param("user_status") String userStatus, @Param("user_id") UUID userId);
 
-    @Query(value = "select * from auth.user u, room.room r where r.user_id=u.user_id and r.room_id=:room_id and u.status=:status", nativeQuery = true)
+    @Query(
+            value = "SELECT u.* FROM auth.user u " +
+                    "JOIN room.room_member rm ON rm.user_id = u.user_id " +
+                    "WHERE rm.room_id = :room_id AND u.status = :status",
+            nativeQuery = true
+    )
     List<User> getByRoomAndUserStatus(@Param("room_id") UUID roomId, @Param("status") String status);
 }

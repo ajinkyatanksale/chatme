@@ -6,6 +6,7 @@ import com.ajinkya.chatme.dto.message.Message;
 import com.ajinkya.chatme.common.enums.RoomType;
 import com.ajinkya.chatme.entity.User;
 import com.ajinkya.chatme.service.MessageService;
+import com.ajinkya.chatme.service.PresenceService;
 import com.ajinkya.chatme.service.RoomService;
 import com.ajinkya.chatme.service.TypingService;
 import jakarta.validation.Valid;
@@ -33,13 +34,16 @@ public class RoomController {
     @Autowired
     TypingService typingService;
 
+    @Autowired
+    PresenceService presenceService;
+
     @PostMapping("/")
     public ResponseEntity<String> createRoom(@RequestBody @Valid CreateRoomRequest createRoomRequest, SecurityContext securityContext) {
         Authentication authentication = securityContext.getAuthentication();
         if (authentication != null) {
             User user = (User) authentication.getPrincipal();
             if (user != null) {
-                if (roomService.createRoom(createRoomRequest.getName(), RoomType.valueOf(createRoomRequest.getRoomType()), user)) {
+                if (roomService.createRoom(createRoomRequest.getName(), RoomType.valueOf(createRoomRequest.getRoomType()), user) != null) {
                     return new ResponseEntity<>("Room created successfully!", HttpStatus.OK);                    
                 } else {
                     return new ResponseEntity<>("Room creation Failed!", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -163,6 +167,49 @@ public class RoomController {
         } else {
             TypingUsersResponse typingUsersResponse = TypingUsersResponse.builder().failureMessage("User not enrolled in this room").build();
             return new ResponseEntity<>(typingUsersResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/{id}/online")
+    public ResponseEntity<OnlineUsersResponse> getOnlineUsers(@PathVariable("id") UUID roomId, SecurityContext securityContext) {
+        Authentication authentication = securityContext.getAuthentication();
+        if (authentication != null) {
+            User user = (User) authentication.getPrincipal();
+            if (user == null) {
+                OnlineUsersResponse onlineUsersResponse = OnlineUsersResponse.builder().failureMessage("UnAuthorised Access").build();
+                return new ResponseEntity<>(onlineUsersResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+            } else {
+                List<com.ajinkya.chatme.dto.userInfo.User> users = presenceService.getOnlineUsersInRoom(roomId);
+                if (users != null) {
+                    return new ResponseEntity<>(OnlineUsersResponse.builder().onlineUsers(users).build(), HttpStatus.OK);
+                } else {
+                    OnlineUsersResponse onlineUsersResponse = OnlineUsersResponse.builder().failureMessage("User not enrolled in this room").build();
+                    return new ResponseEntity<>(onlineUsersResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            }
+        } else {
+            OnlineUsersResponse onlineUsersResponse = OnlineUsersResponse.builder().failureMessage("User not enrolled in this room").build();
+            return new ResponseEntity<>(onlineUsersResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/dm/{id}")
+    public ResponseEntity<JoinRoomResponse> createDM(@PathVariable("id") UUID userId, SecurityContext securityContext) {
+        Authentication authentication = securityContext.getAuthentication();
+        if (authentication != null) {
+            User user = (User) authentication.getPrincipal();
+            if (user == null) {
+                JoinRoomResponse joinRoomResponse = JoinRoomResponse.builder().failureMessage("UnAuthorised Access").build();
+                return new ResponseEntity<>(joinRoomResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+            } else {
+                String message = roomService.findUserAndCreateDM(user, userId);
+                JoinRoomResponse joinRoomResponse = JoinRoomResponse.builder().message(message).build();
+                return new ResponseEntity<>(joinRoomResponse, HttpStatus.OK);
+
+            }
+        } else {
+            JoinRoomResponse joinRoomResponse = JoinRoomResponse.builder().failureMessage("UnAuthorised Access").build();
+            return new ResponseEntity<>(joinRoomResponse, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

@@ -6,14 +6,17 @@ import com.ajinkya.chatme.entity.Room;
 import com.ajinkya.chatme.entity.RoomMember;
 import com.ajinkya.chatme.entity.RoomWithLastRead;
 import com.ajinkya.chatme.entity.User;
+import com.ajinkya.chatme.exception.ResourceNotFoundException;
 import com.ajinkya.chatme.repository.MessageRepository;
 import com.ajinkya.chatme.repository.RoomMemberRepository;
 import com.ajinkya.chatme.repository.RoomRepository;
+import com.ajinkya.chatme.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -28,7 +31,10 @@ public class RoomService {
     @Autowired
     MessageRepository messageRepository;
 
-    public boolean createRoom(String name, RoomType roomType, User user) {
+    @Autowired
+    UserRepository userRepository;
+
+    public UUID createRoom(String name, RoomType roomType, User user) {
         Room room = Room.builder()
                 .name(name)
                 .roomType(roomType)
@@ -43,8 +49,8 @@ public class RoomService {
                 .user(user)
                 .joinedAt(new Timestamp(System.currentTimeMillis()))
                 .build();
-        roomMember = roomMemberRepository.save(roomMember);
-        return roomMember.getId() != null && room.getId() != null;
+        roomMemberRepository.save(roomMember);
+        return room.getId();
     }
 
     public boolean joinRoom(UUID roomId, User user) {
@@ -93,5 +99,17 @@ public class RoomService {
             roomInfoList.add(roomInfoBuilder.unReadCount(count).build());
         });
         return roomInfoList;
+    }
+
+    public String findUserAndCreateDM(User user, UUID userId) {
+        Optional<User> targetUser = userRepository.findById(userId);
+
+        if (targetUser.isPresent()) {
+            UUID roomId = createRoom(null, RoomType.DM, user);
+            joinRoom(roomId, targetUser.get());
+        } else {
+            throw new ResourceNotFoundException("User not found to create chat with");
+        }
+        return "DM created successfully";
     }
 }
