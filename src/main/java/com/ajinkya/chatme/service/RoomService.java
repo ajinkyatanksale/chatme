@@ -91,9 +91,19 @@ public class RoomService {
             RoomInfo.RoomInfoBuilder roomInfoBuilder = RoomInfo.builder()
                     .roomId(room.room().getId())
                     .roomType(room.room().getRoomType().name())
-                    .name(room.room().getName())
                     .createdBy(room.room().getCreatedBy().getUsername())
                     .createdAt(room.room().getCreatedAt());
+
+            if (room.room().getRoomType() == RoomType.DM) {
+                List<RoomMember> roomMember = roomMemberRepository.findRecipientIdsByRoomId(room.room().getId(), user.getId());
+                if (roomMember.size() == 1) {
+                    roomInfoBuilder.name(roomMember.getFirst().getUser().getEmail());
+                } else {
+                    throw new IllegalStateException("The room is not a DM");
+                }
+            } else {
+                roomInfoBuilder.name(room.room().getName());
+            }
 
             int count = messageRepository.countByRoomAndCreatedAtAfterAndUserNot(room.room(), room.lastReadAt(), user);
             roomInfoList.add(roomInfoBuilder.unReadCount(count).build());
