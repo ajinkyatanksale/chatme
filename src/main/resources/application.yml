@@ -82,9 +82,9 @@ spring:
       on-profile: prod
 
   datasource:
-    url: ${DATABASE_URL}
-    username: ${DATABASE_USER}
-    password: ${DATABASE_PASSWORD}
+    url: ${DATABASE_URL:jdbc:postgresql://host.docker.internal:5433/chatme}
+    username: ${DATABASE_USER:chatme}
+    password: ${DATABASE_PASSWORD:chatme}
     hikari:
       maximum-pool-size: 20
 
@@ -95,11 +95,11 @@ spring:
       password: ${REDIS_PASSWORD}
 
   cache:
-    timeout: ${CACHE_TIMEOUT}
+    timeout: ${CACHE_TIMEOUT:30}
 
   app:
     cors:
-      allowed-origins: ${FRONTEND_URL}
+      allowed-origins: ${FRONTEND_URL:localhost:8080}
 
 ---
 spring:
