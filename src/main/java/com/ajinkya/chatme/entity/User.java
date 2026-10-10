@@ -37,6 +37,8 @@ public class User implements UserDetails {
     private String username;
     @Column(name="password_hash")
     private String password;
+    @Column(name="mobile_number")
+    private String mobileNumber;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

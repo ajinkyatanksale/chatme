@@ -47,7 +47,6 @@ public class AuthServiceTest {
         RegistrationRequest registrationRequest = RegistrationRequest.builder()
                 .name("ABC DEF")
                 .email("abc@gmail.com")
-                .username("abc")
                 .password("abc@1234")
                 .build();
 
@@ -66,7 +65,6 @@ public class AuthServiceTest {
         RegistrationRequest registrationRequest = RegistrationRequest.builder()
                 .name("ABC DEF")
                 .email("abc@gmail.com")
-                .username("abc")
                 .password("abc@1234")
                 .build();
 

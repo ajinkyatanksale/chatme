@@ -141,7 +141,7 @@ public class ChatWebSocketTest extends BaseIntegrationTest {
     private String registerUser(String username, String email, RestClient restClient) {
         String testPassword = "securepassword";
         RegistrationRequest registrationRequest = RegistrationRequest.builder()
-                .username(username)
+                .mobileNumber("9762289938")
                 .email(email)
                 .password(testPassword)
                 .name("Test User")

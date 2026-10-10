@@ -38,10 +38,10 @@ public class AuthIntegrationTest extends BaseIntegrationTest {
 
         // 1. REGISTER
         RegistrationRequest registrationRequest = RegistrationRequest.builder()
-                .username(testUsername)
                 .email("testuser@def.com")
                 .password(testPassword)
                 .name("Test User")
+                .mobileNumber("9762289938")
                 .build();
 
         ResponseEntity<AuthResponse> registerResponse = restClient.post()
@@ -90,7 +90,7 @@ public class AuthIntegrationTest extends BaseIntegrationTest {
 
         // 1. REGISTER
         RegistrationRequest registrationRequest = RegistrationRequest.builder()
-                .username(testUsername)
+                .mobileNumber("9762289938")
                 .email("testuser1@def.com")
                 .password(testPassword)
                 .name("Test User")
@@ -124,7 +124,7 @@ public class AuthIntegrationTest extends BaseIntegrationTest {
 
         // 1. REGISTER
         RegistrationRequest registrationRequest = RegistrationRequest.builder()
-                .username(testUsername)
+                .mobileNumber("9762289938")
                 .email("testuser2@def.com")
                 .password(testPassword)
                 .name("Test User")

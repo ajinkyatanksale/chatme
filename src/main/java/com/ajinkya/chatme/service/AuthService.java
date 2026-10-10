@@ -38,7 +38,7 @@ public class AuthService {
 
     public AuthResponse register(RegistrationRequest registrationRequest) {
 
-        Optional<User> existingUser = userRepository.findByUsername(registrationRequest.getUsername());
+        Optional<User> existingUser = userRepository.findByUsername(registrationRequest.getEmail());
 
         if (existingUser.isPresent()) {
             throw new UserAlreadyExistsException("User already registered");
@@ -47,10 +47,11 @@ public class AuthService {
         User user = User.builder()
                 .email(registrationRequest.getEmail())
                 .password(passwordEncoder.encode(registrationRequest.getPassword()))
-                .username(registrationRequest.getUsername())
+                .username(registrationRequest.getEmail())
                 .status(UserStatus.AWAY)
                 .lastSeen(new Timestamp(System.currentTimeMillis()))
                 .insertDt(new Timestamp(System.currentTimeMillis()))
+                .mobileNumber(registrationRequest.getMobileNumber())
                 .build();
         userRepository.save(user);
 

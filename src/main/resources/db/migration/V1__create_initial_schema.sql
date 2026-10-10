@@ -13,6 +13,7 @@ CREATE TABLE auth.user (
     password_hash VARCHAR(255) NOT NULL,
     avatar_url    VARCHAR(500),
     status        VARCHAR(20)  NOT NULL DEFAULT 'OFFLINE',
+    mobile_number VARCHAR(10) NOT NULL,
     last_seen     TIMESTAMP WITH TIME ZONE,
     insert_dt     TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
@@ -68,3 +69,16 @@ CREATE TABLE message.attachment (
 CREATE INDEX idx_messages_room_id   ON message.message(room_id, created_at DESC);
 CREATE INDEX idx_room_members_user  ON room.room_member(user_id);
 CREATE INDEX idx_message_reads_user ON message.message_read(user_id);
+
+-- 6. Grant Privileges
+GRANT ALL PRIVILEGES ON SCHEMA auth TO chatme;
+GRANT ALL PRIVILEGES ON SCHEMA room TO chatme;
+GRANT ALL PRIVILEGES ON SCHEMA message TO chatme;
+
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA auth TO chatme;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA room TO chatme;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA message TO chatme;
+
+ALTER DEFAULT PRIVILEGES IN SCHEMA auth GRANT ALL PRIVILEGES ON TABLES TO chatme;
+ALTER DEFAULT PRIVILEGES IN SCHEMA room GRANT ALL PRIVILEGES ON TABLES TO chatme;
+ALTER DEFAULT PRIVILEGES IN SCHEMA message GRANT ALL PRIVILEGES ON TABLES TO chatme;

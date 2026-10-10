@@ -45,7 +45,7 @@ public class RoomIntegrationTest extends BaseIntegrationTest {
 
         // 1. REGISTER
         RegistrationRequest registrationRequest = RegistrationRequest.builder()
-                .username(testUsername)
+                .mobileNumber("9762289938")
                 .email("testuser12345@def.com")
                 .password(testPassword)
                 .name("Test User")
