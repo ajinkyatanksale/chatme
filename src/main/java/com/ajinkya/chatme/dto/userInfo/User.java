@@ -16,5 +16,7 @@ public class User {
     private String status;
     private Timestamp lastSeen;
     private String username;
+    private String name;
+    private String mobileNumber;
 }
 

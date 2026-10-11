@@ -51,9 +51,7 @@ public class AuthService {
 
         Optional<User> existingUser = userRepository.findByUsername(registrationRequest.getEmail());
 
-        if (existingUser.isPresent()) {
-            throw new UserAlreadyExistsException("User already registered");
-        }
+        existingUser.orElseThrow(() -> new UserAlreadyExistsException("User already registered"));
 
         User user = User.builder()
                 .email(registrationRequest.getEmail())
