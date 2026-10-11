@@ -33,7 +33,7 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/chat-me/register", "/chat-me/login", "/swagger-ui/**", "/v3/api-docs/**", "/chatme/**").permitAll()
+                        .requestMatchers("/chat-me/register", "/chat-me/login","/chat-me/oauth2/google", "/swagger-ui/**", "/v3/api-docs/**", "/chatme/**").permitAll()
                         .requestMatchers("/internal/**").hasRole("SERVICE")
                         .anyRequest().authenticated())
 //                .exceptionHandling(ex -> ex.authenticationEntryPoint(point))

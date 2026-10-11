@@ -10,5 +10,4 @@ import java.util.List;
 @Builder
 public class MessageHistoryResponse {
     private List<Message> messages;
-    private String failureMessage;
 }

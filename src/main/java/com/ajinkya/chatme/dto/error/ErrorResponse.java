@@ -9,8 +9,8 @@ import java.time.Instant;
 @Getter
 @Setter
 public class ErrorResponse {
-    Integer status;
-    String error;
-    String path;
-    Instant timestamp;
+    private Integer status;
+    private String error;
+    private String path;
+    private Instant timestamp;
 }

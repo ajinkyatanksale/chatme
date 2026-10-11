@@ -12,5 +12,4 @@ import java.util.UUID;
 @NoArgsConstructor
 public class TypingUsersResponse {
     private List<UUID> userId;
-    private String failureMessage;
 }

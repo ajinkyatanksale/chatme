@@ -10,5 +10,4 @@ import lombok.*;
 @ToString
 public class JoinRoomResponse {
     private String message;
-    private String failureMessage;
 }

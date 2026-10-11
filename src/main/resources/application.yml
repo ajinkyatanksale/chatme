@@ -82,9 +82,9 @@ spring:
       on-profile: prod
 
   datasource:
-    url: ${DATABASE_URL:jdbc:postgresql://host.docker.internal:5433/chatme}
-    username: ${DATABASE_USER:chatme}
-    password: ${DATABASE_PASSWORD:chatme}
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USER}
+    password: ${DATABASE_PASSWORD}
     hikari:
       maximum-pool-size: 20
 
@@ -100,7 +100,8 @@ spring:
   app:
     cors:
       allowed-origins: ${FRONTEND_URL:localhost:8080}
-
+    google:
+      client-id: ${CLIENT_ID:dbwjqdb821978912}
 ---
 spring:
   config:

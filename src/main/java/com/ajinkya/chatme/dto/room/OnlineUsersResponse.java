@@ -11,5 +11,4 @@ import java.util.List;
 @NoArgsConstructor
 public class OnlineUsersResponse {
     private List<User> onlineUsers;
-    private String failureMessage;
 }

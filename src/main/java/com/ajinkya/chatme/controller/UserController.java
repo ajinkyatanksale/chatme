@@ -2,6 +2,7 @@ package com.ajinkya.chatme.controller;
 
 import com.ajinkya.chatme.dto.userInfo.FindUserResponse;
 import com.ajinkya.chatme.entity.User;
+import com.ajinkya.chatme.exception.UnauthorizedException;
 import com.ajinkya.chatme.service.UserService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -31,12 +32,10 @@ public class UserController {
                 com.ajinkya.chatme.dto.userInfo.User user1 = userService.getUserByUsername(username);
                 return new ResponseEntity<>(FindUserResponse.builder().user(user1).build(), HttpStatus.OK);
             } else {
-                findUserResponse = FindUserResponse.builder().failureMessage("User not authorized!").build();
-                return new ResponseEntity<>(findUserResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+                throw new UnauthorizedException("User not authorized!");
             }
         } else {
-            findUserResponse = FindUserResponse.builder().failureMessage("User not authorized!").build();
-            return new ResponseEntity<>(findUserResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new UnauthorizedException("User not authorized!");
         }
     }
 }
