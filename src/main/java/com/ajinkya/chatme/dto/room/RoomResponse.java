@@ -10,5 +10,4 @@ import java.util.List;
 @Setter
 public class RoomResponse {
     private List<RoomInfo> rooms;
-    private String failureMessage;
 }

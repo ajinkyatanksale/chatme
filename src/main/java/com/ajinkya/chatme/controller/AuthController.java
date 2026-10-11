@@ -2,6 +2,7 @@ package com.ajinkya.chatme.controller;
 
 import com.ajinkya.chatme.dto.auth.AuthResponse;
 import com.ajinkya.chatme.dto.auth.LoginRequest;
+import com.ajinkya.chatme.dto.auth.OAuthRequest;
 import com.ajinkya.chatme.dto.auth.RegistrationRequest;
 import com.ajinkya.chatme.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -41,4 +42,13 @@ public class AuthController {
     public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
         return new ResponseEntity<>(authService.login(loginRequest), HttpStatus.OK);
     }
+
+    @PostMapping("/oauth2/google")
+    @Operation(summary = "OAuth Flow")
+    @ApiResponse(responseCode = "200", description = "User logged in successfully using oauth")
+    @ApiResponse(responseCode = "400", description = "User log in attempt failed using oauth")
+    public ResponseEntity<AuthResponse> oauth(@Valid @RequestBody OAuthRequest oAuthRequest) {
+        return new ResponseEntity<>(authService.oAuthVerification(oAuthRequest.getToken()), HttpStatus.OK);
+    }
+
 }

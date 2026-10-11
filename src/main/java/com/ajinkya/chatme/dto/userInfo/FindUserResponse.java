@@ -9,5 +9,4 @@ import lombok.*;
 @Builder
 public class FindUserResponse {
     private User user;
-    private String failureMessage;
 }

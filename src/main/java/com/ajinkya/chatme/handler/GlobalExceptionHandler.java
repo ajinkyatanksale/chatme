@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .error("User or Room not found")
                 .status(HttpStatus.NOT_FOUND.value())
-                .path(request.getPathInfo())
+                .path(request.getContextPath())
                 .timestamp(Instant.now())
                 .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .error("User or Room not found")
                 .status(HttpStatus.NOT_FOUND.value())
-                .path(request.getPathInfo())
+                .path(request.getContextPath())
                 .timestamp(Instant.now())
                 .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
@@ -48,7 +48,7 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .error("Invalid Request")
                 .status(HttpStatus.BAD_REQUEST.value())
-                .path(request.getPathInfo())
+                .path(request.getContextPath())
                 .timestamp(Instant.now())
                 .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
@@ -60,7 +60,7 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .error("User not authorized to access the resource")
                 .status(HttpStatus.UNAUTHORIZED.value())
-                .path(request.getPathInfo())
+                .path(request.getContextPath())
                 .timestamp(Instant.now())
                 .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
@@ -72,7 +72,7 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .error("Request validation failed")
                 .status(HttpStatus.BAD_REQUEST.value())
-                .path(request.getPathInfo())
+                .path(request.getContextPath())
                 .timestamp(Instant.now())
                 .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
@@ -84,7 +84,7 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .error("Access Denied")
                 .status(HttpStatus.UNAUTHORIZED.value())
-                .path(request.getPathInfo())
+                .path(request.getContextPath())
                 .timestamp(Instant.now())
                 .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
@@ -96,14 +96,14 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .error("User not found")
                 .status(HttpStatus.NOT_FOUND.value())
-                .path(request.getPathInfo())
+                .path(request.getContextPath())
                 .timestamp(Instant.now())
                 .build();
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(UserAlreadyExistsException.class)
-    public ResponseEntity<AuthResponse> handleUserAlreadyExistsException(UserAlreadyExistsException e, HttpServletRequest request) {
+    public ResponseEntity<AuthResponse> handleUserAlreadyExistsException(UserAlreadyExistsException e) {
         log.error(e.getMessage());
         AuthResponse authResponse = AuthResponse.builder()
                 .message("Already registered")
@@ -116,10 +116,10 @@ public class GlobalExceptionHandler {
         log.error("Internal server error {}", e.getMessage());
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .error("Internal server error")
-                .status(HttpStatus.NOT_FOUND.value())
-                .path(request.getPathInfo())
+                .status(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                .path(request.getContextPath())
                 .timestamp(Instant.now())
                 .build();
-        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

@@ -5,6 +5,8 @@ import com.ajinkya.chatme.dto.message.MessageHistoryResponse;
 import com.ajinkya.chatme.dto.message.Message;
 import com.ajinkya.chatme.common.enums.RoomType;
 import com.ajinkya.chatme.entity.User;
+import com.ajinkya.chatme.exception.ResourceNotFoundException;
+import com.ajinkya.chatme.exception.UnauthorizedException;
 import com.ajinkya.chatme.service.MessageService;
 import com.ajinkya.chatme.service.PresenceService;
 import com.ajinkya.chatme.service.RoomService;
@@ -46,13 +48,13 @@ public class RoomController {
                 if (roomService.createRoom(createRoomRequest.getName(), RoomType.valueOf(createRoomRequest.getRoomType()), user) != null) {
                     return new ResponseEntity<>("Room created successfully!", HttpStatus.OK);                    
                 } else {
-                    return new ResponseEntity<>("Room creation Failed!", HttpStatus.INTERNAL_SERVER_ERROR);
+                    throw new ResourceNotFoundException("Room creation Failed!");
                 }
             } else {
-                return new ResponseEntity<>("User not authorized!", HttpStatus.INTERNAL_SERVER_ERROR);
+                throw new UnauthorizedException("User not authorized!");
             }
         } else {
-            return new ResponseEntity<>("User not authorized!", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new UnauthorizedException("User not authorized!");
         }
     }
 
@@ -67,12 +69,10 @@ public class RoomController {
                 roomResponse = RoomResponse.builder().rooms(room).build();
                 return new ResponseEntity<>(roomResponse, HttpStatus.OK);
             } else {
-                roomResponse = RoomResponse.builder().failureMessage("User not authorized!").build();
-                return new ResponseEntity<>(roomResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+                throw new UnauthorizedException("User not authorized!");
             }
         } else {
-            roomResponse = RoomResponse.builder().failureMessage("User not authorized!").build();
-            return new ResponseEntity<>(roomResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new UnauthorizedException("User not authorized!");
         }
     }
 
@@ -87,12 +87,10 @@ public class RoomController {
                 roomResponse = RoomResponse.builder().rooms(room).build();
                 return new ResponseEntity<>(roomResponse, HttpStatus.OK);
             } else {
-                roomResponse = RoomResponse.builder().failureMessage("User not authorized!").build();
-                return new ResponseEntity<>(roomResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+                throw new UnauthorizedException("User not authorized!");
             }
         } else {
-            roomResponse = RoomResponse.builder().failureMessage("User not authorized!").build();
-            return new ResponseEntity<>(roomResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new UnauthorizedException("User not authorized!");
         }
     }
 
@@ -102,21 +100,18 @@ public class RoomController {
         if (authentication != null) {
             User user = (User) authentication.getPrincipal();
             if (user == null) {
-                MessageHistoryResponse messageHistoryResponse = MessageHistoryResponse.builder().failureMessage("UnAuthorised Access").build();
-                return new ResponseEntity<>(messageHistoryResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+                throw new UnauthorizedException("User not authorized!");
             } else {
                 List<Message> messages = messageService.getMessageHistory(roomId, pageNumber, pageSize, user);
                 if (messages != null) {
                     MessageHistoryResponse messageHistoryResponse = MessageHistoryResponse.builder().messages(messages).build();
                     return new ResponseEntity<>(messageHistoryResponse, HttpStatus.OK);
                 } else {
-                    MessageHistoryResponse messageHistoryResponse = MessageHistoryResponse.builder().failureMessage("User not enrolled in this room").build();
-                    return new ResponseEntity<>(messageHistoryResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+                    throw new ResourceNotFoundException("User not enrolled in this room");
                 }
             }
         } else {
-            MessageHistoryResponse messageHistoryResponse = MessageHistoryResponse.builder().failureMessage("User not enrolled in this room").build();
-            return new ResponseEntity<>(messageHistoryResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ResourceNotFoundException("User not enrolled in this room");
         }
     }
 
@@ -126,21 +121,18 @@ public class RoomController {
         if (authentication != null) {
             User user = (User) authentication.getPrincipal();
             if (user == null) {
-                JoinRoomResponse joinRoomResponse = JoinRoomResponse.builder().failureMessage("UnAuthorised Access").build();
-                return new ResponseEntity<>(joinRoomResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+                throw new UnauthorizedException("User not authorized!");
             } else {
                 boolean isRoomJoinSuccessful = roomService.joinRoom(roomId, user);
                 if (isRoomJoinSuccessful) {
                     JoinRoomResponse joinRoomResponse = JoinRoomResponse.builder().message("Room joining successful").build();
                     return new ResponseEntity<>(joinRoomResponse, HttpStatus.OK);
                 } else {
-                    JoinRoomResponse joinRoomResponse = JoinRoomResponse.builder().failureMessage("Room join operation failed").build();
-                    return new ResponseEntity<>(joinRoomResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+                    throw new ResourceNotFoundException("Room join operation failed");
                 }
             }
         } else {
-            JoinRoomResponse joinRoomResponse = JoinRoomResponse.builder().failureMessage("UnAuthorised Access").build();
-            return new ResponseEntity<>(joinRoomResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new UnauthorizedException("User not authorized!");
         }
     }
 
@@ -150,8 +142,7 @@ public class RoomController {
         if (authentication != null) {
             User user = (User) authentication.getPrincipal();
             if (user == null) {
-                TypingUsersResponse typingUsersResponse = TypingUsersResponse.builder().failureMessage("UnAuthorised Access").build();
-                return new ResponseEntity<>(typingUsersResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+                throw new UnauthorizedException("User not authorized!");
             } else {
                 List<UUID> users = typingService.getTypingUsers(roomId);
                 if (users != null) {
@@ -160,13 +151,11 @@ public class RoomController {
                             .build();
                     return new ResponseEntity<>(typingUsersResponse, HttpStatus.OK);
                 } else {
-                    TypingUsersResponse typingUsersResponse = TypingUsersResponse.builder().failureMessage("User not enrolled in this room").build();
-                    return new ResponseEntity<>(typingUsersResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+                    throw new ResourceNotFoundException("User not enrolled in this room");
                 }
             }
         } else {
-            TypingUsersResponse typingUsersResponse = TypingUsersResponse.builder().failureMessage("User not enrolled in this room").build();
-            return new ResponseEntity<>(typingUsersResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ResourceNotFoundException("User not enrolled in this room");
         }
     }
 
@@ -176,20 +165,17 @@ public class RoomController {
         if (authentication != null) {
             User user = (User) authentication.getPrincipal();
             if (user == null) {
-                OnlineUsersResponse onlineUsersResponse = OnlineUsersResponse.builder().failureMessage("UnAuthorised Access").build();
-                return new ResponseEntity<>(onlineUsersResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+                throw new UnauthorizedException("User not authorized!");
             } else {
                 List<com.ajinkya.chatme.dto.userInfo.User> users = presenceService.getOnlineUsersInRoom(roomId);
                 if (users != null) {
                     return new ResponseEntity<>(OnlineUsersResponse.builder().onlineUsers(users).build(), HttpStatus.OK);
                 } else {
-                    OnlineUsersResponse onlineUsersResponse = OnlineUsersResponse.builder().failureMessage("User not enrolled in this room").build();
-                    return new ResponseEntity<>(onlineUsersResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+                    throw new ResourceNotFoundException("User not enrolled in this room");
                 }
             }
         } else {
-            OnlineUsersResponse onlineUsersResponse = OnlineUsersResponse.builder().failureMessage("User not enrolled in this room").build();
-            return new ResponseEntity<>(onlineUsersResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ResourceNotFoundException("User not enrolled in this room");
         }
     }
 
@@ -199,8 +185,7 @@ public class RoomController {
         if (authentication != null) {
             User user = (User) authentication.getPrincipal();
             if (user == null) {
-                JoinRoomResponse joinRoomResponse = JoinRoomResponse.builder().failureMessage("UnAuthorised Access").build();
-                return new ResponseEntity<>(joinRoomResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+                throw new UnauthorizedException("User not authorized!");
             } else {
                 String message = roomService.findUserAndCreateDM(user, userId);
                 JoinRoomResponse joinRoomResponse = JoinRoomResponse.builder().message(message).build();
@@ -208,8 +193,7 @@ public class RoomController {
 
             }
         } else {
-            JoinRoomResponse joinRoomResponse = JoinRoomResponse.builder().failureMessage("UnAuthorised Access").build();
-            return new ResponseEntity<>(joinRoomResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new UnauthorizedException("User not authorized!");
         }
     }
 }
