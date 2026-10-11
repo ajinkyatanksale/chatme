@@ -1,13 +1,13 @@
 package com.ajinkya.chatme.repository;
 
 import com.ajinkya.chatme.entity.User;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -35,4 +35,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
             nativeQuery = true
     )
     List<User> getByRoomAndUserStatus(@Param("room_id") UUID roomId, @Param("status") String status);
+
+    @Query(value = "SELECT u.* FROM User u WHERE LOWER(u.email) LIKE LOWER(CONCAT(:query, '%')) AND u.email != :currentUserEmail", nativeQuery = true)
+    List<User> searchByEmailPrefix(@Param("query") String query, @Param("currentUserEmail") String currentUserEmail, Pageable pageable);
 }
