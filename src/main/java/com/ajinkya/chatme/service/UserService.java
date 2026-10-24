@@ -23,7 +23,7 @@ public class UserService {
         User.UserBuilder userBuilder = User.builder();
         user.orElseThrow(() -> new ResourceNotFoundException("User not present in system"));
 
-        return userBuilder.userId(user.get().getId())
+        return userBuilder
                 .avatarUrl(user.get().getAvatarUrl())
                 .status(user.get().getStatus().name())
                 .lastSeen(user.get().getLastSeen())

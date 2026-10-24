@@ -24,14 +24,14 @@ public class UserController {
     @Autowired
     UserService userService;
 
-    @GetMapping("/getbyusername")
-    public ResponseEntity<FindUserResponse> getUserByUsername(@RequestParam("username") @Valid @NotBlank String username, SecurityContext securityContext) {
+    @GetMapping("/getbyuserinfo")
+    public ResponseEntity<FindUserResponse> getUserByUsername(SecurityContext securityContext) {
         Authentication authentication = securityContext.getAuthentication();
         com.ajinkya.chatme.dto.userInfo.FindUserResponse findUserResponse;
         if (authentication != null) {
             User user = (User) authentication.getPrincipal();
             if (user != null) {
-                com.ajinkya.chatme.dto.userInfo.User user1 = userService.getUserByUsername(username);
+                com.ajinkya.chatme.dto.userInfo.User user1 = userService.getUserByUsername(user.getUsername());
                 return new ResponseEntity<>(FindUserResponse.builder().user(user1).build(), HttpStatus.OK);
             } else {
                 throw new UnauthorizedException("User not authorized!");
