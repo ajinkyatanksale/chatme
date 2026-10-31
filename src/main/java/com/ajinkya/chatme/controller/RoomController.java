@@ -4,6 +4,7 @@ import com.ajinkya.chatme.dto.room.*;
 import com.ajinkya.chatme.dto.message.MessageHistoryResponse;
 import com.ajinkya.chatme.dto.message.Message;
 import com.ajinkya.chatme.common.enums.RoomType;
+import com.ajinkya.chatme.entity.Room;
 import com.ajinkya.chatme.entity.User;
 import com.ajinkya.chatme.exception.ResourceNotFoundException;
 import com.ajinkya.chatme.exception.UnauthorizedException;
@@ -39,14 +40,22 @@ public class RoomController {
     @Autowired
     PresenceService presenceService;
 
-    @PostMapping("/")
-    public ResponseEntity<String> createRoom(@RequestBody @Valid CreateRoomRequest createRoomRequest, SecurityContext securityContext) {
+    @PostMapping("/createGroup/group")
+    public ResponseEntity<CreateRoomResponse> createGroup(@RequestBody @Valid CreateRoomRequest createRoomRequest, SecurityContext securityContext) {
         Authentication authentication = securityContext.getAuthentication();
         if (authentication != null) {
             User user = (User) authentication.getPrincipal();
             if (user != null) {
-                if (roomService.createRoom(createRoomRequest.getName(), RoomType.valueOf(createRoomRequest.getRoomType()), user) != null) {
-                    return new ResponseEntity<>("Room created successfully!", HttpStatus.OK);                    
+                Room room = roomService.createGroup(createRoomRequest.getGroupName(), RoomType.GROUP, user, createRoomRequest.getMembers());
+                if (room != null) {
+                    CreateRoomResponse createRoomResponse = CreateRoomResponse.builder()
+                            .groupAvatarUrl("")
+                            .groupName(createRoomRequest.getGroupName())
+                            .memberIds(createRoomRequest.getMembers())
+                            .createdAt(room.getCreatedAt())
+                            .createdBy(com.ajinkya.chatme.dto.userInfo.User.builder().name(user.getName()).email(user.getEmail()).avatarUrl(user.getAvatarUrl()).status(String.valueOf(user.getStatus())).build())
+                            .build();
+                    return new ResponseEntity<>(createRoomResponse, HttpStatus.OK);
                 } else {
                     throw new ResourceNotFoundException("Room creation Failed!");
                 }
@@ -76,7 +85,7 @@ public class RoomController {
         }
     }
 
-    @GetMapping("/rooms")
+    @GetMapping("/getMyRooms")
     public ResponseEntity<RoomResponse> myAllRooms(SecurityContext securityContext) {
         Authentication authentication = securityContext.getAuthentication();
         RoomResponse roomResponse;
@@ -179,17 +188,16 @@ public class RoomController {
         }
     }
 
-    @PostMapping("/dm/{id}")
-    public ResponseEntity<JoinRoomResponse> createDM(@PathVariable("id") UUID userId, SecurityContext securityContext) {
+    @PostMapping("/createGroup/dm")
+    public ResponseEntity<String> createDM(@RequestBody CreateDMRequest createDMRequest, SecurityContext securityContext) {
         Authentication authentication = securityContext.getAuthentication();
         if (authentication != null) {
             User user = (User) authentication.getPrincipal();
             if (user == null) {
                 throw new UnauthorizedException("User not authorized!");
             } else {
-                String message = roomService.findUserAndCreateDM(user, userId);
-                JoinRoomResponse joinRoomResponse = JoinRoomResponse.builder().message(message).build();
-                return new ResponseEntity<>(joinRoomResponse, HttpStatus.OK);
+                String message = roomService.findUserAndCreateDM(user, createDMRequest.getReceiverUserId(), createDMRequest.getMessage());
+                return new ResponseEntity<>(message, HttpStatus.OK);
 
             }
         } else {

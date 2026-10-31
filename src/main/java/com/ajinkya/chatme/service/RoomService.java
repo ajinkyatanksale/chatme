@@ -1,6 +1,9 @@
 package com.ajinkya.chatme.service;
 
+import com.ajinkya.chatme.common.enums.ContentType;
+import com.ajinkya.chatme.common.enums.MessageStatus;
 import com.ajinkya.chatme.common.enums.RoomType;
+import com.ajinkya.chatme.dto.message.Message;
 import com.ajinkya.chatme.dto.room.RoomInfo;
 import com.ajinkya.chatme.entity.Room;
 import com.ajinkya.chatme.entity.RoomMember;
@@ -13,6 +16,8 @@ import com.ajinkya.chatme.repository.RoomRepository;
 import com.ajinkya.chatme.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +39,8 @@ public class RoomService {
     @Autowired
     UserRepository userRepository;
 
-    public UUID createRoom(String name, RoomType roomType, User user) {
+    @Transactional
+    public Room createGroup(String name, RoomType roomType, User user, List<UUID> members) {
         Room room = Room.builder()
                 .name(name)
                 .roomType(roomType)
@@ -49,8 +55,14 @@ public class RoomService {
                 .user(user)
                 .joinedAt(new Timestamp(System.currentTimeMillis()))
                 .build();
+        UUID roomId = room.getId();
+        members.forEach(memberId -> {
+            Optional<User> targetUser = userRepository.findById(memberId);
+            targetUser.orElseThrow(() -> new ResourceNotFoundException("User not found to create chat with"));
+            joinRoom(roomId, targetUser.get());
+        });
         roomMemberRepository.save(roomMember);
-        return room.getId();
+        return room;
     }
 
     public boolean joinRoom(UUID roomId, User user) {
@@ -111,15 +123,19 @@ public class RoomService {
         return roomInfoList;
     }
 
-    public String findUserAndCreateDM(User user, UUID userId) {
-        Optional<User> targetUser = userRepository.findById(userId);
+    public String findUserAndCreateDM(User user, UUID receiverUserId, Message message) {
+    Room room = createGroup(null, RoomType.DM, user, List.of(receiverUserId));
+        com.ajinkya.chatme.entity.Message message1 = com.ajinkya.chatme.entity.Message.builder()
+                .messageStatus(MessageStatus.DELIVERED)
+                .room(room)
+                .createdAt(new Timestamp(System.currentTimeMillis()))
+                .content(message.getContent())
+                .contentType(ContentType.valueOf(message.getContentType()))
+                .editedAt(new Timestamp(System.currentTimeMillis()))
+                .user(user)
+                .build();
+        messageRepository.save(message1);
 
-        if (targetUser.isPresent()) {
-            UUID roomId = createRoom(null, RoomType.DM, user);
-            joinRoom(roomId, targetUser.get());
-        } else {
-            throw new ResourceNotFoundException("User not found to create chat with");
-        }
         return "DM created successfully";
     }
 }

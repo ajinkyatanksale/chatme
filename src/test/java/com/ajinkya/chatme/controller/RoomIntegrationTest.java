@@ -64,7 +64,7 @@ public class RoomIntegrationTest extends BaseIntegrationTest {
         log.info(token);
 
         CreateRoomRequest createRoomRequest = CreateRoomRequest.builder()
-                .name("Ksharu")
+                .groupName("Ksharu")
                 .RoomType("DM")
                 .build();
 

@@ -57,7 +57,7 @@ public class ChatWebSocketTest extends BaseIntegrationTest {
         String token2 = registerUser("testuser002", "testuser002@gmail.com", restClient);
 
         CreateRoomRequest createRoomRequest = CreateRoomRequest.builder()
-                .name("Ksharu")
+                .groupName("Ksharu")
                 .RoomType("DM")
                 .build();
 
