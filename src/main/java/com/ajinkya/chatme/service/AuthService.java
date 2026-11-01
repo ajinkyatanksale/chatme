@@ -110,7 +110,7 @@ public class AuthService {
                 User user = userRepository.findByEmail(email).orElseGet(() -> {
                     User newUser = User.builder()
                             .email(email)
-                            .password(UUID.randomUUID().toString().substring(0, 10))
+                            .password(passwordEncoder.encode(UUID.randomUUID().toString().substring(0, 10)))
                             .username(email)
                             .status(UserStatus.AWAY)
                             .insertDt(new Timestamp(System.currentTimeMillis()))
