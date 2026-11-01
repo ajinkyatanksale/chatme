@@ -40,7 +40,7 @@ public class RoomController {
     @Autowired
     PresenceService presenceService;
 
-    @PostMapping("/createGroup/group")
+    @PostMapping("/createRoom/group")
     public ResponseEntity<CreateRoomResponse> createGroup(@RequestBody @Valid CreateRoomRequest createRoomRequest, SecurityContext securityContext) {
         Authentication authentication = securityContext.getAuthentication();
         if (authentication != null) {
@@ -188,7 +188,7 @@ public class RoomController {
         }
     }
 
-    @PostMapping("/createGroup/dm")
+    @PostMapping("/createRoom/dm")
     public ResponseEntity<String> createDM(@RequestBody CreateDMRequest createDMRequest, SecurityContext securityContext) {
         Authentication authentication = securityContext.getAuthentication();
         if (authentication != null) {

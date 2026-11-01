@@ -24,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.RestClient;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -65,11 +66,12 @@ public class RoomIntegrationTest extends BaseIntegrationTest {
 
         CreateRoomRequest createRoomRequest = CreateRoomRequest.builder()
                 .groupName("Ksharu")
-                .RoomType("DM")
+                .groupAvatarUrl("")
+                .members(List.of(UUID.randomUUID()))
                 .build();
 
         ResponseEntity<String> createRoomResponse = restClient.post()
-                .uri("/chat-me/room/")
+                .uri("/chat-me/room/createRoom/dm")
                 .header("Authorization", "Bearer " + token)
                 .body(createRoomRequest)
                 .retrieve()
@@ -79,7 +81,7 @@ public class RoomIntegrationTest extends BaseIntegrationTest {
         Assertions.assertEquals(createRoomResponse.getBody(), "Room created successfully!");
 
         ResponseEntity<RoomResponse> roomsResponse = restClient.get()
-                .uri("/chat-me/room/")
+                .uri("/chat-me/room/getMyRooms")
                 .header("Authorization", "Bearer " + token)
                 .retrieve()
                 .toEntity(RoomResponse.class);

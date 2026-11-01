@@ -58,7 +58,6 @@ public class ChatWebSocketTest extends BaseIntegrationTest {
 
         CreateRoomRequest createRoomRequest = CreateRoomRequest.builder()
                 .groupName("Ksharu")
-                .RoomType("DM")
                 .build();
 
         ResponseEntity<String> createRoomResponse = restClient.post()

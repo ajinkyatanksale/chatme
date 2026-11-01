@@ -38,4 +38,9 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     @Query(value = "SELECT u.* FROM User u WHERE LOWER(u.email) LIKE LOWER(CONCAT(:query, '%')) AND u.email != :currentUserEmail", nativeQuery = true)
     List<User> searchByEmailPrefix(@Param("query") String query, @Param("currentUserEmail") String currentUserEmail, Pageable pageable);
+
+    @Transactional
+    @Modifying
+    @Query(value = "update auth.user set user_handle = :user_handle where user_id = :user_id", nativeQuery = true)
+    int updateUserHandleByUserId(@Param("user_handle") String userHandle, @Param("user_id") UUID userId);
 }

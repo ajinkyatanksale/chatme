@@ -17,7 +17,7 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class User extends com.ajinkya.chatme.dto.userInfo.User implements UserDetails {
+public class User implements UserDetails {
     @Id
     @Column(name="user_id")
     @GeneratedValue(strategy=GenerationType.UUID)
@@ -41,6 +41,8 @@ public class User extends com.ajinkya.chatme.dto.userInfo.User implements UserDe
     private String mobileNumber;
     @Column(name="name")
     private String name;
+    @Column(name = "user_handle")
+    private String userHandle;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

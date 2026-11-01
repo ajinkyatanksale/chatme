@@ -33,8 +33,8 @@ public class AuthIntegrationTest extends BaseIntegrationTest {
         RestClient restClient = RestClient.builder().baseUrl("http://localhost:" + port).build();
 
         // Extract credentials to variables to guarantee they match exactly
-        String testUsername = "testuser123";
-        String testPassword = "securepassword";
+        String testUsername = "testuser1234";
+        String testPassword = "securepassword1";
 
         // 1. REGISTER
         RegistrationRequest registrationRequest = RegistrationRequest.builder()

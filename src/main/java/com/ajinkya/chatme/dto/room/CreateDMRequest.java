@@ -1,6 +1,7 @@
 package com.ajinkya.chatme.dto.room;
 
 import com.ajinkya.chatme.dto.message.Message;
+import com.ajinkya.chatme.dto.message.MessageRequest;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -15,5 +16,5 @@ public class CreateDMRequest {
     @NotNull
     private UUID receiverUserId;
     @NotNull
-    private Message message;
+    private MessageRequest message;
 }

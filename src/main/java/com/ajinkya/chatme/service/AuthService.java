@@ -48,10 +48,10 @@ public class AuthService {
     }
 
     public AuthResponse register(RegistrationRequest registrationRequest) {
-
         Optional<User> existingUser = userRepository.findByUsername(registrationRequest.getEmail());
-
-        existingUser.orElseThrow(() -> new UserAlreadyExistsException("User already registered"));
+        if (existingUser.isPresent()) {
+            throw new UserAlreadyExistsException("User already registered");
+        };
 
         User user = User.builder()
                 .email(registrationRequest.getEmail())
@@ -62,6 +62,7 @@ public class AuthService {
                 .insertDt(new Timestamp(System.currentTimeMillis()))
                 .mobileNumber(registrationRequest.getMobileNumber())
                 .name(registrationRequest.getName())
+                .userHandle("Hey there! I am using bolna")
                 .build();
         userRepository.save(user);
 

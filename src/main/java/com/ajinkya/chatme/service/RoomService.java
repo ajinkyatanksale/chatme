@@ -4,6 +4,7 @@ import com.ajinkya.chatme.common.enums.ContentType;
 import com.ajinkya.chatme.common.enums.MessageStatus;
 import com.ajinkya.chatme.common.enums.RoomType;
 import com.ajinkya.chatme.dto.message.Message;
+import com.ajinkya.chatme.dto.message.MessageRequest;
 import com.ajinkya.chatme.dto.room.RoomInfo;
 import com.ajinkya.chatme.entity.Room;
 import com.ajinkya.chatme.entity.RoomMember;
@@ -123,7 +124,7 @@ public class RoomService {
         return roomInfoList;
     }
 
-    public String findUserAndCreateDM(User user, UUID receiverUserId, Message message) {
+    public String findUserAndCreateDM(User user, UUID receiverUserId, MessageRequest message) {
     Room room = createGroup(null, RoomType.DM, user, List.of(receiverUserId));
         com.ajinkya.chatme.entity.Message message1 = com.ajinkya.chatme.entity.Message.builder()
                 .messageStatus(MessageStatus.DELIVERED)

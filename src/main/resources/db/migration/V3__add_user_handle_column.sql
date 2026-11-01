@@ -1,0 +1,1 @@
+ALTER TABLE auth.user ADD COLUMN user_handle VARCHAR(40) NOT NULL DEFAULT 'Hey there! I am using bolna';

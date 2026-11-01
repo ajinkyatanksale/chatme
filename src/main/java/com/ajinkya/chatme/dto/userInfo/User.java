@@ -18,5 +18,6 @@ public class User {
     private String username;
     private String name;
     private String mobileNumber;
+    private String userHandle;
 }
 

@@ -30,6 +30,7 @@ public class UserService {
                 .username(user.get().getUsername())
                 .name(user.get().getName())
                 .mobileNumber(user.get().getMobileNumber())
+                .userHandle(user.get().getUserHandle())
                 .build();
     }
 
@@ -55,5 +56,13 @@ public class UserService {
         });
 
         return userList;
+    }
+
+    public String setUserHandle(String userHandle, com.ajinkya.chatme.entity.User user) {
+        if (userRepository.updateUserHandleByUserId(userHandle, user.getId()) > 0) {
+            return userHandle;
+        } else {
+            throw new ResourceNotFoundException("User handle updation failed");
+        }
     }
 }

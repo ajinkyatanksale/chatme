@@ -1,9 +1,11 @@
 package com.ajinkya.chatme.controller;
 
 import com.ajinkya.chatme.dto.userInfo.FindUserResponse;
+import com.ajinkya.chatme.dto.userInfo.SetUserHandleRequest;
 import com.ajinkya.chatme.entity.User;
 import com.ajinkya.chatme.exception.UnauthorizedException;
 import com.ajinkya.chatme.service.UserService;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -50,6 +52,24 @@ public class UserController {
                 return new ResponseEntity<>(userService.getDynamicUsersByUsernamePrefix(prefix, user.getUsername()), HttpStatus.OK);
             } else {
                 throw new UnauthorizedException("User not authorized!");
+            }
+        } else {
+            throw new UnauthorizedException("User not authorized!");
+        }
+    }
+
+    @PostMapping("/setUserHandle")
+    @ApiResponse(responseCode = "200", description = "User handle set successful")
+    @ApiResponse(responseCode = "400", description = "User handle set failed")
+    public ResponseEntity<String> oauth(@Valid @RequestBody SetUserHandleRequest setUserHandleRequest, SecurityContext securityContext) {
+        Authentication authentication = securityContext.getAuthentication();
+        if (authentication != null) {
+            User user = (User) authentication.getPrincipal();
+            if (user == null) {
+                throw new UnauthorizedException("User not authorized!");
+            } else {
+                String userHandle = userService.setUserHandle(setUserHandleRequest.getUserHandle(), user);
+                return new ResponseEntity<>(userHandle, HttpStatus.OK);
             }
         } else {
             throw new UnauthorizedException("User not authorized!");
